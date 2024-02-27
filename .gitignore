@@ -1,3 +1,11 @@
+## Custom part
+
+zoomlink.txt
+speakers.csv
+*~
+
+## Default part
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

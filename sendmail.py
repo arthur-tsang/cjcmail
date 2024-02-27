@@ -35,12 +35,14 @@ def template_fill(dico):
         with open('zoomlink.txt', 'r') as f:
             zoomlink = ''.join(f.readlines()).strip()
             assert len(zoomlink) > 0
-            print(f'Zoom link: {zoomlink}')
-            
-    except (FileNotFoundError, AssertionError) as e:
-        print('ERROR: Need to create a file zoomlink.txt containing just the zoom link')
-        raise e
-        
+
+    except FileNotFoundError as e:
+        raise Exception('ERROR: Need to create a file zoomlink.txt containing just the zoom link')
+    except AssertionError as e:
+        raise Exception('Need to add zoom link to `zoomlink.txt`')
+    
+    print(f'Zoom link: {zoomlink}')
+    
     template = re.sub('{zoomlink}', zoomlink, template)
             
     return template
@@ -62,7 +64,12 @@ def send_email(subject, body):
     print(f'About to email {to_address}')
     print('If this is correct, please confirm by answering the following prompt')
     print('(You can set up an App ID at https://myaccount.google.com/u/1/apppasswords )')
-    password = getpass.getpass(f'App ID for {from_address}: ')
+    try:
+        password = getpass.getpass(f'App ID for {from_address}: ')
+    except KeyboardInterrupt:
+        print()
+        print('KeyboardInterrupt. Not sending email.')
+        return
 
     # Setting up the MIME
     msg = MIMEMultipart()
