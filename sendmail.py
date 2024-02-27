@@ -30,6 +30,19 @@ def template_fill(dico):
         for key in keys:
             template = re.sub('{' + key + '}', dico[key], template)
 
+    ## Read zoom link from `zoomlink.txt`
+    try:
+        with open('zoomlink.txt', 'r') as f:
+            zoomlink = ''.join(f.readlines()).strip()
+            assert len(zoomlink) > 0
+            print(f'Zoom link: {zoomlink}')
+            
+    except (FileNotFoundError, AssertionError) as e:
+        print('ERROR: Need to create a file zoomlink.txt containing just the zoom link')
+        raise e
+        
+    template = re.sub('{zoomlink}', zoomlink, template)
+            
     return template
 
 def send_email(subject, body):
@@ -43,8 +56,8 @@ def send_email(subject, body):
     snabela = '@'
     from_address = 'atsang' + snabela + 'g.harvard.edu'
 
-    # to_address = 'arthurltsang' + snabela + 'gmail.com'
-    to_address = 'cosmo-journal-club' + snabela + 'lists.fas.harvard.edu'
+    to_address = 'arthurltsang' + snabela + 'gmail.com'
+    # to_address = 'cosmo-journal-club' + snabela + 'lists.fas.harvard.edu'
 
     print(f'About to email {to_address}')
     print('If this is correct, please confirm by answering the following prompt')
