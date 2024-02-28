@@ -16,7 +16,7 @@ from sendmail import get_today_dico
 
 if __name__ == '__main__':
     download_speaker_csv()
-    dico = get_today_dico()
+    dico = get_today_dico(today_counts=False)
 
     to_paste = f"{dico['date']}    {dico['speaker']}"
     pyperclip.copy(to_paste)

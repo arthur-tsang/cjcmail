@@ -106,10 +106,15 @@ def send_email_using_template(dico):
 
     send_email(subject, body)
 
-def get_today_dico():
+def get_today_dico(today_counts=True):
     """Gets the dictionary of info for the next speaker in the future (based on
     today's date). Note this function assumes a certain date format in the csv,
-    like "Tuesday, February 27, 2024".
+    like "Tuesday, February 27, 2024", and that dates are in chronological order.
+
+    If today is a journal club day, and `today_counts` is True, then this
+    function returns the information for today. Otherwise, if `today_counts` is
+    False, it returns the information for the next journal club in the future.
+
     """
     
     today = datetime.date.today()
@@ -119,12 +124,36 @@ def get_today_dico():
         reader = csv.DictReader(csvfile)
         for row in reader:
             speaker_date = datetime.datetime.strptime(row['date'], csv_date_format).date()
-            if speaker_date < today:
+            if speaker_date < today or (not today_counts and speaker_date == today):
                 continue
             else:
                 return row
 
     raise ValueError('All dates in speaker csv are in the past')
+
+def get_past_dico():
+    """Gets the most recent entry in the past from the csv. Same formatting
+    assumptions as get_today_dico.
+
+    """
+
+    today = datetime.date.today()
+    csv_date_format = "%A, %B %d, %Y"
+
+    with open('speakers.csv') as csvfile:
+        reader = csv.DictReader(csvfile)
+        prev_row = None
+        for row in reader:
+            speaker_date = datetime.datetime.strptime(row['date'], csv_date_format).date()
+            if speaker_date <= today:
+                prev_row = row
+                continue
+            else:
+                return prev_row
+
+        # If we got this far, this was the last row
+        return prev_row
+    
 
 if __name__ == '__main__':
     download_speaker_csv() # the google doc spreadsheet is the master copy
